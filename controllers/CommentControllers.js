@@ -16,7 +16,12 @@ const getComment = async (req, res) => {
 };
 
 const addComments = async (req, res) => {
-  res.json("ok3");
+  const { body } = req.body;
+  if (!body) {
+    throw new Error("bad-req");
+  }
+  await CommentModule.create({ body });
+  res.status(201).json({ success: true });
 };
 
 const updateComments = async (req, res) => {
