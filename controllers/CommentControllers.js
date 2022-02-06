@@ -6,6 +6,7 @@ const getAllComments = async (req, res) => {
   }
   res.status(200).json({ success: true, data: allComment });
 };
+
 const getComment = async (req, res) => {
   const comment = await CommentModule.findById(req.params.id);
   if (!comment) {
@@ -13,12 +14,15 @@ const getComment = async (req, res) => {
   }
   res.status(200).json({ success: true, data: comment });
 };
+
 const addComments = async (req, res) => {
   res.json("ok3");
 };
+
 const updateComments = async (req, res) => {
   res.json("ok4");
 };
+
 const deleteComments = async (req, res) => {
   res.json("ok5");
 };

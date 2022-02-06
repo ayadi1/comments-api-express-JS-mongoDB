@@ -1,4 +1,5 @@
 const express = require("express");
+const errorRouter = require("../functions/errorRouter");
 const {
   getAllComments,
   getComment,
@@ -9,10 +10,12 @@ const {
 
 const Route = express.Router();
 
-Route.route("/").get(getAllComments).post(addComments);
+Route.route("/")
+  .get(errorRouter(getAllComments))
+  .post(errorRouter(addComments));
 Route.route("/:id")
-  .get(getComment)
-  .delete(deleteComments)
-  .patch(updateComments);
+  .get(errorRouter(getComment))
+  .delete(errorRouter(deleteComments))
+  .patch(errorRouter(updateComments));
 
 module.exports = Route;
