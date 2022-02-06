@@ -29,7 +29,8 @@ const updateComments = async (req, res) => {
 };
 
 const deleteComments = async (req, res) => {
-  res.json("ok5");
+  await CommentModule.findByIdAndDelete(req.params.id);
+  res.status(200).json({ success: true });
 };
 
 module.exports = {
