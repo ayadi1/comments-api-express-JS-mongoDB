@@ -18,7 +18,9 @@ const getComment = async (req, res) => {
 const addComments = async (req, res) => {
   const { body } = req.body;
   if (!body) {
-    throw new Error("please provide a body text").status(400);
+    const myError = new Error("please provide a body text");
+    myError.status(400);
+    throw myError;
   }
   await CommentModule.create({ body });
   res.status(201).json({ success: true });
@@ -48,7 +50,12 @@ const updateComments = async (req, res) => {
 };
 
 const deleteComments = async (req, res) => {
-  await CommentModule.findByIdAndDelete(req.params.id);
+  const deletedComment = await CommentModule.findByIdAndDelete(req.params.id);
+  if (!deletedComment) {
+    const myError = new Error("bad request please try again");
+    myError.status = 400;
+    throw myError;
+  }
   res.status(200).json({ success: true });
 };
 

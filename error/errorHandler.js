@@ -1,5 +1,4 @@
 const errorHandler = (err, req, res, next) => {
-  console.log(err.message);
   if (err.status === 400) {
     return res.status(400).json({
       success: false,
