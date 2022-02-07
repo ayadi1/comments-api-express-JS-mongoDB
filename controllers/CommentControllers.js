@@ -1,4 +1,5 @@
 const CommentModule = require("../modules/CommentModule");
+const validateObjectID = require("../functions/validateObjectID");
 const getAllComments = async (req, res) => {
   const allComment = await CommentModule.find({});
   if (!allComment) {
@@ -8,6 +9,7 @@ const getAllComments = async (req, res) => {
 };
 
 const getComment = async (req, res) => {
+  validateObjectID(req.params.id);
   const comment = await CommentModule.findById(req.params.id);
   if (!comment) {
     throw res.json({ success: false });
@@ -19,7 +21,7 @@ const addComments = async (req, res) => {
   const { body } = req.body;
   if (!body) {
     const myError = new Error("please provide a body text");
-    myError.status(400);
+    myError.status = 400;
     throw myError;
   }
   await CommentModule.create({ body });
@@ -27,6 +29,7 @@ const addComments = async (req, res) => {
 };
 
 const updateComments = async (req, res) => {
+  validateObjectID(req.params.id);
   const { id: commentID } = req.params;
   const { body, score } = req.body;
   const newData = { body };
@@ -50,6 +53,7 @@ const updateComments = async (req, res) => {
 };
 
 const deleteComments = async (req, res) => {
+  validateObjectID(req.params.id);
   const deletedComment = await CommentModule.findByIdAndDelete(req.params.id);
   if (!deletedComment) {
     const myError = new Error("bad request please try again");
