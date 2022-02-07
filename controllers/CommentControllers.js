@@ -18,14 +18,40 @@ const getComment = async (req, res) => {
 };
 
 const addComments = async (req, res) => {
-  const { body } = req.body;
+  const { body, isReplayFor } = req.body;
+  const commentData = {};
+  // check if body text exists
   if (!body) {
     const myError = new Error("please provide a body text");
     myError.status = 400;
     throw myError;
   }
-  await CommentModule.create({ body });
-  res.status(201).json({ success: true });
+  commentData.body = body;
+
+  // check if id isReplayFor_id valid
+  if (!isReplayFor) {
+    await CommentModule.create({ ...commentData });
+    return res.status(201).json({ success: true });
+  } else {
+    validateObjectID(isReplayFor);
+
+    // check if comment exists and add to replays list
+    const mainComment = await CommentModule.findById(isReplayFor);
+
+    if (!mainComment) {
+      const myError = new Error("please provide a body text");
+      myError.status = 400;
+      throw myError;
+    }
+    commentData.isReplayFor = isReplayFor;
+
+    const newComment = await CommentModule.create({ ...commentData });
+    console.log(mainComment._id);
+    await CommentModule.findByIdAndUpdate(isReplayFor, {
+      replays: [...mainComment.replays, newComment._id],
+    });
+    return res.status(201).json({ success: true });
+  }
 };
 
 const updateComments = async (req, res) => {
