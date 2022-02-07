@@ -18,14 +18,33 @@ const getComment = async (req, res) => {
 const addComments = async (req, res) => {
   const { body } = req.body;
   if (!body) {
-    throw new Error("bad-req");
+    throw new Error("please provide a body text").status(400);
   }
   await CommentModule.create({ body });
   res.status(201).json({ success: true });
 };
 
 const updateComments = async (req, res) => {
-  res.json("ok4");
+  const { id: commentID } = req.params;
+  const { body, score } = req.body;
+  const newData = { body };
+  if (score) {
+    // check if score a number start
+    if (isNaN(+score)) {
+      const myError = new Error("bad request please provide a valid for score");
+      myError.status = 400;
+      throw myError;
+    }
+    // check if score a number end
+    const oldCommentScore = await CommentModule.findById(commentID);
+    newData.score = +score + oldCommentScore.score;
+  }
+  const updatedComment = await CommentModule.findByIdAndUpdate(
+    commentID,
+    newData,
+    { new: true, runValidators: true }
+  );
+  res.status(200).json({ success: true, data: updatedComment });
 };
 
 const deleteComments = async (req, res) => {

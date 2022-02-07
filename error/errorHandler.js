@@ -1,11 +1,14 @@
 const errorHandler = (err, req, res, next) => {
   console.log(err.message);
-  if (err.message === "bad-req") {
-    return res
-      .status(400)
-      .json({ success: false, msg: "bad request please try again" });
+  if (err.status === 400) {
+    return res.status(400).json({
+      success: false,
+      msg: `bad request please try again ${err.message}`,
+    });
   }
-  res.status(500).json({ success: false, msg: "Internal Server Error" });
+  res
+    .status(500)
+    .json({ success: false, msg: "internal server error please try again" });
 };
 
 module.exports = errorHandler;
