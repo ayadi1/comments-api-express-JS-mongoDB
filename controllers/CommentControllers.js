@@ -12,25 +12,35 @@ const getComment = async (req, res) => {
   validateObjectID(req.params.id);
   const comment = await CommentModule.findById(req.params.id);
   if (!comment) {
-    throw res.json({ success: false });
+    throw res.json({ success: false, msg: "comment not found" });
   }
   res.status(200).json({ success: true, data: comment });
 };
 
 const addComments = async (req, res) => {
-  const { body, isReplayFor } = req.body;
+  const { content, isReplayFor, img, username } = req.body;
   const commentData = {};
   // check if body text exists
-  if (!body) {
-    const myError = new Error("please provide a body text");
+  if (!content || !username || !img) {
+    const myError = new Error(
+      "please provide a all required field [content,username,img]"
+    );
     myError.status = 400;
     throw myError;
   }
-  commentData.body = body;
+  commentData.content = content;
+  commentData.user = {
+    image: {
+      png: img,
+      webp: img,
+    },
+    username: username,
+  };
 
   // check if id isReplayFor_id valid
   if (!isReplayFor) {
     await CommentModule.create({ ...commentData });
+    // const newComment = new CommentModule();
     return res.status(201).json({ success: true });
   } else {
     validateObjectID(isReplayFor);
@@ -57,8 +67,8 @@ const addComments = async (req, res) => {
 const updateComments = async (req, res) => {
   validateObjectID(req.params.id);
   const { id: commentID } = req.params;
-  const { body, score } = req.body;
-  const newData = { body };
+  const { content, score } = req.body;
+  const newData = { content };
   if (score) {
     // check if score a number start
     if (isNaN(+score)) {
@@ -79,7 +89,21 @@ const updateComments = async (req, res) => {
 };
 
 const deleteComments = async (req, res) => {
-  validateObjectID(req.params.id);
+  const { id: commentID } = req.params;
+  validateObjectID(commentID);
+  const commentData = await CommentModule.findById(commentID);
+
+  // get main Comment and updated for delete id of sub comment from replays list
+  const mainCommentID = commentData.isReplayFor[0];
+  const mainComment = await CommentModule.findById(mainCommentID);
+  const newReplays = mainComment.replays.filter((id) => id != commentID);
+  await CommentModule.findByIdAndUpdate(
+    mainCommentID,
+    { replays: newReplays },
+    { new: true, runValidators: true }
+  );
+  // get main Comment and updated end
+
   const deletedComment = await CommentModule.findByIdAndDelete(req.params.id);
   if (!deletedComment) {
     const myError = new Error("bad request please try again");
