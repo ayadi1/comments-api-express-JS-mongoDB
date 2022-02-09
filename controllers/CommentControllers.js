@@ -94,15 +94,25 @@ const deleteComments = async (req, res) => {
   const commentData = await CommentModule.findById(commentID);
 
   // get main Comment and updated for delete id of sub comment from replays list
-  const mainCommentID = commentData.isReplayFor[0];
-  const mainComment = await CommentModule.findById(mainCommentID);
-  const newReplays = mainComment.replays.filter((id) => id != commentID);
-  await CommentModule.findByIdAndUpdate(
-    mainCommentID,
-    { replays: newReplays },
-    { new: true, runValidators: true }
-  );
+  if (commentData.isReplayFor.length >= 1) {
+    const mainCommentID = commentData.isReplayFor[0];
+    const mainComment = await CommentModule.findById(mainCommentID);
+    const newReplays = mainComment.replays.filter((id) => id != commentID);
+    await CommentModule.findByIdAndUpdate(
+      mainCommentID,
+      { replays: newReplays },
+      { new: true, runValidators: true }
+    );
+  }
   // get main Comment and updated end
+
+  // delete all sub comment start
+  if (commentData.replays.length >= 1) {
+    commentData.replays.forEach(async (subID) => {
+      await CommentModule.findByIdAndDelete(subID);
+    });
+  }
+  // delete all sub comment end
 
   const deletedComment = await CommentModule.findByIdAndDelete(req.params.id);
   if (!deletedComment) {
