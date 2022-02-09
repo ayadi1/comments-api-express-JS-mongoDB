@@ -18,16 +18,17 @@ const getComment = async (req, res) => {
 };
 
 const addComments = async (req, res) => {
-  const { content, isReplayFor, img, username } = req.body;
+  const { content, isReplayFor, img, username ,isYou } = req.body;
   const commentData = {};
   // check if body text exists
   if (!content || !username || !img) {
     const myError = new Error(
-      "please provide a all required field [content,username,img]"
+      "please provide a all required field [content,username,img,isYou]"
     );
     myError.status = 400;
     throw myError;
   }
+  commentData.isYou = isYou ?? false
   commentData.content = content;
   commentData.user = {
     image: {
