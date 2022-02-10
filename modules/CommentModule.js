@@ -10,7 +10,10 @@ const CommentSchema = mongoose.Schema(
     },
     user: {
       image: {
-        png: { type: String },
+        png: {
+          type: String,
+          default: "./assets/images/avatars/image-ramsesmiron.png",
+        },
         webp: { type: String },
       },
       username: {

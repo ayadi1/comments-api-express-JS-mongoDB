@@ -21,9 +21,9 @@ const addComments = async (req, res) => {
   const { content, isReplayFor, img, username ,isYou } = req.body;
   const commentData = {};
   // check if body text exists
-  if (!content || !username || !img) {
+  if (!content || !username) {
     const myError = new Error(
-      "please provide a all required field [content,username,img,isYou]"
+      "please provide a all required field [content,username,isYou]"
     );
     myError.status = 400;
     throw myError;
@@ -121,7 +121,7 @@ const deleteComments = async (req, res) => {
     myError.status = 400;
     throw myError;
   }
-  res.status(200).json({ success: true });
+  res.status(200).json({ success: true ,msg: "comment was deleted"});
 };
 
 module.exports = {
