@@ -60,9 +60,9 @@ Returns json data about a all comment.
   ```javascript
   await axios.get(".. your server name .../api/v1/");
   ``
-  <!-- get all comment end -->
 
   ```
+  <!-- get all comment end -->
 
   <!-- get a single comment start -->
 
